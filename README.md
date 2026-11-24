@@ -82,6 +82,14 @@ To move the widget to another bar section:
 omarchy bar move pipetogrep.omaport --section centerEnd
 ```
 
+### Uninstall
+
+```bash
+omarchy plugin disable pipetogrep.omaport
+omarchy plugin remove pipetogrep.omaport
+rm -f ~/.local/bin/omaport
+```
+
 ---
 
 ## How to Use
