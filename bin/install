@@ -2,7 +2,7 @@
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-PLUGIN_ID="local.omaport"
+PLUGIN_ID="pipetogrep.omaport"
 DEST_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/omarchy/plugins/$PLUGIN_ID"
 BIN_DIR="$HOME/.local/bin"
 
@@ -12,7 +12,9 @@ cargo build --release --manifest-path "$ROOT_DIR/Cargo.toml"
 echo "==> Installing plugin to $DEST_DIR..."
 rm -rf "$DEST_DIR"
 mkdir -p "$DEST_DIR"
-cp -R "$ROOT_DIR/plugin/." "$DEST_DIR/"
+cp "$ROOT_DIR/manifest.json" "$DEST_DIR/"
+cp "$ROOT_DIR/Panel.qml" "$ROOT_DIR/Service.qml" "$ROOT_DIR/ServerRow.qml" "$ROOT_DIR/PlainText.qml" "$DEST_DIR/"
+cp -R "$ROOT_DIR/i18n" "$DEST_DIR/"
 cp "$ROOT_DIR/target/release/omaport" "$DEST_DIR/omaport"
 chmod +x "$DEST_DIR/omaport"
 

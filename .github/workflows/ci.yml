@@ -1,0 +1,47 @@
+name: CI
+
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+
+jobs:
+  test:
+    name: Rust tests & release build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Run unit tests
+        run: cargo test --locked
+
+      - name: Build release binary
+        run: cargo build --release --locked
+
+      - name: Smoke test CLI
+        run: |
+          ./target/release/omaport --help
+          ./target/release/omaport list --json
+
+  validate-plugin:
+    name: Validate Omarchy plugin manifest
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate manifest.json & entry points
+        run: |
+          set -euo pipefail
+          jq -e '.schemaVersion == 1' manifest.json >/dev/null
+          jq -e '.id | type == "string" and length > 0' manifest.json >/dev/null
+          jq -e '(.kinds | index("bar-widget")) != null' manifest.json >/dev/null
+          entry=$(jq -r '.entryPoints.barWidget' manifest.json)
+          test -f "$entry"
+          # Omarchy plugin validator rejects symlinks inside the plugin folder.
+          if find . -maxdepth 3 -not -path './.git/*' -type l | grep -q .; then
+            echo "Error: symlinks are not allowed in Omarchy plugins" >&2
+            exit 1
+          fi

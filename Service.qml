@@ -14,9 +14,21 @@ Item {
   property string lastError: ""
   property var killingPids: ({})
 
-  readonly property string binaryPath: {
+  readonly property string bundledBinaryPath: {
     var resolved = String(Qt.resolvedUrl("omaport"))
     return resolved.indexOf("file://") === 0 ? resolved.slice(7) : resolved
+  }
+
+  // Prefer a binary bundled beside Service.qml, then fall back to `omaport` on
+  // PATH (e.g. /usr/bin/omaport or ~/.local/bin/omaport) so `omarchy plugin add`
+  // works seamlessly with prebuilt release binaries or AUR installs.
+  function buildCommand(args) {
+    var script = 'bin="$1"; shift; ' +
+      'if [ -x "$bin" ]; then exec "$bin" "$@"; ' +
+      'elif command -v omaport >/dev/null 2>&1; then exec omaport "$@"; ' +
+      'elif [ -x "$HOME/.local/bin/omaport" ]; then exec "$HOME/.local/bin/omaport" "$@"; ' +
+      'else echo "omaport binary not found. Install from GitHub Releases or run ./bin/install." >&2; exit 127; fi'
+    return ["/bin/sh", "-c", script, "--", bundledBinaryPath].concat(args)
   }
 
   function isKilling(pid) {
@@ -33,9 +45,9 @@ Item {
   function refresh() {
     if (scanProcess.running) return
     loading = true
-    var cmd = [binaryPath, "list", "--json"]
-    if (showAllPorts) cmd.push("--all")
-    scanProcess.command = cmd
+    var args = ["list", "--json"]
+    if (showAllPorts) args.push("--all")
+    scanProcess.command = buildCommand(args)
     scanProcess.running = true
   }
 
@@ -57,14 +69,14 @@ Item {
     setKilling(pid, true)
     lastError = ""
 
-    var args = [binaryPath, "kill", String(Math.floor(pid)), "--force"]
+    var args = ["kill", String(Math.floor(pid)), "--force"]
     if (isFinite(port) && port >= 1 && port <= 65535) {
       args.push("--port", String(Math.floor(port)))
     }
 
     var killer = killProcessComponent.createObject(root, {
       targetPid: Math.floor(pid),
-      command: args
+      command: buildCommand(args)
     })
     if (killer) {
       killer.running = true

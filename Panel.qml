@@ -9,8 +9,8 @@ import qs.Ui
 
 Panel {
   id: root
-  moduleName: "local.omaport"
-  ipcTarget: "local.omaport"
+  moduleName: "pipetogrep.omaport"
+  ipcTarget: "pipetogrep.omaport"
   implicitWidth: button.implicitWidth
   implicitHeight: button.implicitHeight
 

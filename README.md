@@ -6,6 +6,20 @@ A native **Omarchy bar widget** and **zero-dependency Rust CLI** for seeing and 
 
 At a glance in your bar, a filled circle + count tells you how many local dev servers are active (or a clean outline circle when none are running). Click it to inspect every server's port, working directory, Git branch, framework, and PID — then **Open** it in your default browser or **Kill** it in one click or keystroke.
 
+<p align="center">
+  <img src="assets/screenshots/tokyo-night.png" width="480" alt="omaport in Tokyo Night theme">
+</p>
+
+### Follows your Omarchy theme live
+
+| Tokyo Night | Catppuccin Latte |
+| :---: | :---: |
+| ![Tokyo Night](assets/screenshots/tokyo-night.png) | ![Catppuccin Latte](assets/screenshots/catppuccin-latte.png) |
+
+| Gruvbox | Everforest |
+| :---: | :---: |
+| ![Gruvbox](assets/screenshots/gruvbox.png) | ![Everforest](assets/screenshots/everforest.png) |
+
 ---
 
 ## Features
@@ -31,25 +45,41 @@ At a glance in your bar, a filled circle + count tells you how many local dev se
 
 ## Installation
 
+### Community install (prebuilt binary + `omarchy plugin add`)
+
+1. Install the `omaport` binary from [GitHub Releases](https://github.com/pipetogrep/omaport/releases) into `~/.local/bin/omaport` (or `/usr/bin/omaport` via `pkgbuild/PKGBUILD`):
+
+```bash
+# Example for x86_64 Linux (replace v0.1.0 with the latest release tag)
+curl -fL https://github.com/pipetogrep/omaport/releases/latest/download/omaport-v0.1.0-linux-x86_64.tar.gz \
+  | tar -xz --strip-components=1 -C ~/.local/bin omaport-v0.1.0-linux-x86_64/omaport
+chmod +x ~/.local/bin/omaport
+```
+
+2. Add and enable the Omarchy bar plugin directly from GitHub:
+
+```bash
+omarchy plugin add https://github.com/pipetogrep/omaport.git --enable
+```
+
+Update later anytime with `omarchy plugin update pipetogrep.omaport`.
+
+### Build from source (local development)
+
 ```bash
 ./bin/install
 ```
 
-The install script:
-1. Compiles the optimized release binary (`cargo build --release`).
-2. Installs the bar-widget plugin (with the compiled `omaport` binary) to `~/.config/omarchy/plugins/local.omaport/`.
-3. Installs the standalone CLI to `~/.local/bin/omaport`.
-4. Validates the manifest via `omarchy plugin validate`.
-5. Reloads `omarchy-shell` plugins and enables `local.omaport` in the right section of your bar (persisted in `~/.config/omarchy/shell.json`).
+The install script compiles the release Rust binary, installs the plugin to `~/.config/omarchy/plugins/pipetogrep.omaport/`, installs the CLI to `~/.local/bin/omaport`, validates the manifest via `omarchy plugin validate`, and enables `pipetogrep.omaport` in the right section of your bar (persisted in `~/.config/omarchy/shell.json`).
 
 ### Startup Behavior
 
-Because `local.omaport` is registered in `~/.config/omarchy/shell.json` under `bar.layout`, **`omarchy-shell` loads it automatically on every login and reboot** — no separate systemd service or Hyprland `exec-once` rule is required.
+Because `pipetogrep.omaport` is registered in `~/.config/omarchy/shell.json` under `bar.layout`, **`omarchy-shell` loads it automatically on every login and reboot** — no separate systemd service or Hyprland `exec-once` rule is required.
 
 To move the widget to another bar section:
 
 ```bash
-omarchy bar move local.omaport --section centerEnd
+omarchy bar move pipetogrep.omaport --section centerEnd
 ```
 
 ---
@@ -71,17 +101,17 @@ omarchy bar move local.omaport --section centerEnd
 
 ### Optional Hyprland Keybinding
 
-You can toggle the popup from anywhere using `omarchy-shell local.omaport toggle` (for example in `~/.config/hypr/bindings.lua`):
+You can toggle the popup from anywhere using `omarchy-shell pipetogrep.omaport toggle` (for example in `~/.config/hypr/bindings.lua`):
 
 ```lua
-o.bind("SUPER CTRL, P", "Omaport", "exec", "omarchy-shell local.omaport toggle")
+o.bind("SUPER CTRL, P", "Omaport", "exec", "omarchy-shell pipetogrep.omaport toggle")
 ```
 
 ---
 
 ## Configuration
 
-Configure `local.omaport` via `omarchy bar set` or directly in `~/.config/omarchy/shell.json`:
+Configure `pipetogrep.omaport` via `omarchy bar set` or directly in `~/.config/omarchy/shell.json`:
 
 | Key | Type | Default | Description |
 |---|---|---|---|
@@ -92,8 +122,8 @@ Configure `local.omaport` via `omarchy bar set` or directly in `~/.config/omarch
 Example:
 
 ```bash
-omarchy bar set local.omaport showCount false
-omarchy bar set local.omaport refreshIntervalSec 5
+omarchy bar set pipetogrep.omaport showCount false
+omarchy bar set pipetogrep.omaport refreshIntervalSec 5
 ```
 
 ---
@@ -115,7 +145,7 @@ Inside the Omaport popup:
 You can also toggle the popup over IPC (for Hyprland keybindings):
 
 ```bash
-omarchy-shell local.omaport toggle
+omarchy-shell pipetogrep.omaport toggle
 ```
 
 ---
@@ -158,6 +188,12 @@ Example `omaport list --json` output:
 ## Architecture
 
 ```text
+├── manifest.json             # Omarchy plugin manifest (schemaVersion: 1, pipetogrep.omaport)
+├── Panel.qml                 # Bar status dot + KeyboardPanel popup + keybinds
+├── Service.qml               # Polling timer, Process runner, Open & Kill hooks
+├── ServerRow.qml             # Server card (port, project, dir, branch, PID, actions)
+├── PlainText.qml             # Text.PlainText wrapper (prevents markup injection)
+├── i18n/en.json              # Translations catalog (Commons.Translations)
 ├── Cargo.toml                # Zero-dependency Rust crate (`omaport`)
 ├── src/
 │   ├── main.rs               # CLI entry point & JSON serializer
@@ -165,15 +201,12 @@ Example `omaport list --json` output:
 │   ├── git.rs                # .git/HEAD & git-worktree branch resolver
 │   ├── filter.rs             # Dev-server classification & framework detection
 │   └── kill.rs               # Ownership + port-verified SIGTERM/SIGKILL
-├── plugin/                   # Native Omarchy bar-widget frontend (Quickshell/QML)
-│   ├── manifest.json         # Omarchy plugin manifest (schemaVersion: 1)
-│   ├── Panel.qml             # Bar status dot + KeyboardPanel popup + keybinds
-│   ├── Service.qml           # Polling timer, Process runner, Open & Kill hooks
-│   ├── ServerRow.qml         # Server card (port, project, dir, branch, PID, actions)
-│   ├── PlainText.qml         # Text.PlainText wrapper (prevents markup injection)
-│   └── i18n/en.json          # Translations catalog (Commons.Translations)
+├── pkgbuild/PKGBUILD         # Arch Linux package definition
+├── .github/workflows/
+│   ├── ci.yml                # Rust tests, release build, and manifest validation
+│   └── release.yml           # Tagged Linux x86_64 & aarch64 release tarballs + SHA256SUMS
 └── bin/
-    └── install               # Build, install plugin + CLI, validate & enable in bar
+    └── install               # Local build, install plugin + CLI, validate & enable in bar
 ```
 
 ---

@@ -1,0 +1,28 @@
+pkgname=omaport
+pkgver=0.1.0
+pkgrel=1
+pkgdesc="Fast local dev-server discovery and management CLI for the Omarchy bar"
+arch=('x86_64' 'aarch64')
+url="https://github.com/pipetogrep/omaport"
+license=('MIT')
+makedepends=('cargo')
+source=("${pkgname}-${pkgver}.tar.gz::${url}/archive/refs/tags/v${pkgver}.tar.gz")
+sha256sums=('SKIP')
+
+build() {
+  cd "${pkgname}-${pkgver}"
+  export RUSTUP_TOOLCHAIN=stable
+  export CARGO_TARGET_DIR=target
+  cargo build --release --locked
+}
+
+check() {
+  cd "${pkgname}-${pkgver}"
+  cargo test --locked
+}
+
+package() {
+  cd "${pkgname}-${pkgver}"
+  install -Dm755 "target/release/omaport" "${pkgdir}/usr/bin/omaport"
+  install -Dm644 "README.md" "${pkgdir}/usr/share/doc/${pkgname}/README.md"
+}
