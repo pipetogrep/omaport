@@ -50,9 +50,9 @@ At a glance in your bar, a filled circle + count tells you how many local dev se
 1. Install the `omaport` binary from [GitHub Releases](https://github.com/pipetogrep/omaport/releases) into `~/.local/bin/omaport` (or `/usr/bin/omaport` via `pkgbuild/PKGBUILD`):
 
 ```bash
-# Example for x86_64 Linux (replace v0.1.0 with the latest release tag)
-curl -fL https://github.com/pipetogrep/omaport/releases/latest/download/omaport-v0.1.0-linux-x86_64.tar.gz \
-  | tar -xz --strip-components=1 -C ~/.local/bin omaport-v0.1.0-linux-x86_64/omaport
+# Example for x86_64 Linux (replace v1.0.0 with the latest release tag)
+curl -fL https://github.com/pipetogrep/omaport/releases/latest/download/omaport-v1.0.0-linux-x86_64.tar.gz \
+  | tar -xz --strip-components=1 -C ~/.local/bin omaport-v1.0.0-linux-x86_64/omaport
 chmod +x ~/.local/bin/omaport
 ```
 

@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "id": "pipetogrep.omaport",
   "name": "Omaport",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "author": "pipetogrep",
   "license": "MIT",
   "description": "Show locally running dev servers with working directory, git branch, PID, and quick Open or Kill actions.",
