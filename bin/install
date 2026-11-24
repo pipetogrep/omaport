@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+PLUGIN_ID="local.omaport"
+DEST_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/omarchy/plugins/$PLUGIN_ID"
+BIN_DIR="$HOME/.local/bin"
+
+echo "==> Building omaport (release)..."
+cargo build --release --manifest-path "$ROOT_DIR/Cargo.toml"
+
+echo "==> Installing plugin to $DEST_DIR..."
+rm -rf "$DEST_DIR"
+mkdir -p "$DEST_DIR"
+cp -R "$ROOT_DIR/plugin/." "$DEST_DIR/"
+cp "$ROOT_DIR/target/release/omaport" "$DEST_DIR/omaport"
+chmod +x "$DEST_DIR/omaport"
+
+mkdir -p "$BIN_DIR"
+cp "$ROOT_DIR/target/release/omaport" "$BIN_DIR/omaport"
+chmod +x "$BIN_DIR/omaport"
+
+echo "==> Validating plugin manifest..."
+omarchy plugin validate "$DEST_DIR"
+
+echo "==> Reloading Omarchy shell plugins..."
+omarchy-shell shell rescanPlugins || true
+
+echo "==> Enabling $PLUGIN_ID in Omarchy bar (right section)..."
+omarchy plugin enable "$PLUGIN_ID" --section right
+
+echo "Done! $PLUGIN_ID is installed and active in the Omarchy bar."

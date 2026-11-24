@@ -1,0 +1,12 @@
+[package]
+name = "omaport"
+version = "0.1.0"
+edition = "2024"
+description = "Fast local dev-server discovery and management CLI for the Omarchy bar"
+license = "MIT"
+
+[profile.release]
+lto = true
+codegen-units = 1
+strip = true
+opt-level = "s"

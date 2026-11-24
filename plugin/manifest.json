@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "id": "local.omaport",
+  "name": "Omaport",
+  "version": "0.1.0",
+  "author": "Local",
+  "license": "MIT",
+  "description": "Show locally running dev servers with working directory, git branch, PID, and quick Open or Kill actions.",
+  "kinds": [
+    "bar-widget"
+  ],
+  "entryPoints": {
+    "barWidget": "Panel.qml"
+  },
+  "barWidget": {
+    "displayName": "Omaport",
+    "description": "Monitor locally running dev servers, open them in your default browser, or kill them from the bar.",
+    "category": "Development",
+    "aliases": [
+      "omaport",
+      "dev-servers",
+      "ports"
+    ],
+    "allowMultiple": false,
+    "defaultSection": "right",
+    "defaults": {
+      "refreshIntervalSec": 10,
+      "showCount": true,
+      "showAllPorts": false
+    },
+    "schema": [
+      {
+        "key": "refreshIntervalSec",
+        "type": "integer",
+        "label": "Refresh interval (seconds)",
+        "min": 3,
+        "max": 300,
+        "step": 1,
+        "defaultValue": 10
+      },
+      {
+        "key": "showCount",
+        "type": "boolean",
+        "label": "Show server count in bar",
+        "defaultValue": true
+      },
+      {
+        "key": "showAllPorts",
+        "type": "boolean",
+        "label": "Show all user listening ports",
+        "defaultValue": false
+      }
+    ]
+  }
+}

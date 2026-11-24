@@ -1,0 +1,26 @@
+{
+  "title": "Dev Servers",
+  "titleAll": "All Ports",
+  "modeDev": "Dev",
+  "modeAll": "All",
+  "serverCount": {
+    "one": "%1 server",
+    "other": "%1 servers"
+  },
+  "tooltipEmpty": "No local dev servers running",
+  "tooltipActive": {
+    "one": "%1 local dev server running",
+    "other": "%1 local dev servers running"
+  },
+  "emptyTitle": "No local dev servers running",
+  "emptyHint": "Start a local server or toggle all listening ports.",
+  "noMatches": "No matching servers",
+  "searchPlaceholder": "Filter by port, directory, branch, or PID…",
+  "refreshTooltip": "Refresh (r)",
+  "showAllTooltip": "Show all user listening ports (a)",
+  "devOnlyTooltip": "Showing all ports — click for dev servers only (a)",
+  "openTooltip": "Open in default browser (Enter)",
+  "killTooltip": "Kill process (x)",
+  "pidLabel": "PID %1",
+  "allPortsBadge": "All"
+}
