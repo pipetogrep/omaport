@@ -20,14 +20,13 @@ Item {
   }
 
   // Prefer a binary bundled beside Service.qml, then fall back to `omaport` on
-  // PATH (e.g. /usr/bin/omaport or ~/.local/bin/omaport) so `omarchy plugin add`
-  // works seamlessly with prebuilt release binaries or AUR installs.
+  // PATH (e.g. /usr/bin/omaport or ~/.local/bin/omaport).
   function buildCommand(args) {
     var script = 'bin="$1"; shift; ' +
       'if [ -x "$bin" ]; then exec "$bin" "$@"; ' +
       'elif command -v omaport >/dev/null 2>&1; then exec omaport "$@"; ' +
       'elif [ -x "$HOME/.local/bin/omaport" ]; then exec "$HOME/.local/bin/omaport" "$@"; ' +
-      'else echo "omaport binary not found. Install from GitHub Releases or run ./bin/install." >&2; exit 127; fi'
+      'else echo "omaport binary not found. Build from source (see README.md)." >&2; exit 127; fi'
     return ["/bin/sh", "-c", script, "--", bundledBinaryPath].concat(args)
   }
 

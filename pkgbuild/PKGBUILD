@@ -7,7 +7,7 @@ url="https://github.com/pipetogrep/omaport"
 license=('MIT')
 makedepends=('cargo')
 source=("${pkgname}-${pkgver}.tar.gz::${url}/archive/refs/tags/v${pkgver}.tar.gz")
-sha256sums=('SKIP')
+sha256sums=('60b42d3db5deb58a16bd2bdb688f6b8860fb566511e7db1bf4a38a1e74105c28')
 
 build() {
   cd "${pkgname}-${pkgver}"

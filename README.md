@@ -45,32 +45,38 @@ At a glance in your bar, a filled circle + count tells you how many local dev se
 
 ## Installation
 
-### Community install (prebuilt binary + `omarchy plugin add`)
+### Omarchy plugin + build from source (Recommended)
 
-1. Install the `omaport` binary from [GitHub Releases](https://github.com/pipetogrep/omaport/releases) into `~/.local/bin/omaport` (or `/usr/bin/omaport` via `pkgbuild/PKGBUILD`):
-
-```bash
-# Example for x86_64 Linux (replace v1.0.0 with the latest release tag)
-curl -fL https://github.com/pipetogrep/omaport/releases/latest/download/omaport-v1.0.0-linux-x86_64.tar.gz \
-  | tar -xz --strip-components=1 -C ~/.local/bin omaport-v1.0.0-linux-x86_64/omaport
-chmod +x ~/.local/bin/omaport
-```
-
-2. Add and enable the Omarchy bar plugin directly from GitHub:
+1. Add and enable the Omarchy bar plugin from GitHub:
 
 ```bash
 omarchy plugin add https://github.com/pipetogrep/omaport.git --enable
 ```
 
-Update later anytime with `omarchy plugin update pipetogrep.omaport`.
+2. Build and install the `omaport` Rust binary directly from the cloned plugin source (zero external crate dependencies, builds in a few seconds):
 
-### Build from source (local development)
+```bash
+cargo build --release --locked --manifest-path ~/.config/omarchy/plugins/pipetogrep.omaport/Cargo.toml
+install -Dm755 ~/.config/omarchy/plugins/pipetogrep.omaport/target/release/omaport ~/.local/bin/omaport
+```
+
+Update later with `omarchy plugin update pipetogrep.omaport` and re-run the `cargo build` + `install` commands above if Rust source files changed.
+
+### From a local clone
 
 ```bash
 ./bin/install
 ```
 
-The install script compiles the release Rust binary, installs the plugin to `~/.config/omarchy/plugins/pipetogrep.omaport/`, installs the CLI to `~/.local/bin/omaport`, validates the manifest via `omarchy plugin validate`, and enables `pipetogrep.omaport` in the right section of your bar (persisted in `~/.config/omarchy/shell.json`).
+The install script compiles the release Rust binary (`cargo build --release`), copies the plugin files and binary to `~/.config/omarchy/plugins/pipetogrep.omaport/`, installs the CLI to `~/.local/bin/omaport`, validates the manifest via `omarchy plugin validate`, and enables `pipetogrep.omaport` in the right section of your bar (persisted in `~/.config/omarchy/shell.json`).
+
+### Arch package (`PKGBUILD`)
+
+To install `/usr/bin/omaport` via `pacman`, build with the pinned-checksum [pkgbuild/PKGBUILD](pkgbuild/PKGBUILD):
+
+```bash
+cd pkgbuild && makepkg -si
+```
 
 ### Startup Behavior
 
